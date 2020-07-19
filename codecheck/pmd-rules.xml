@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+
+<ruleset name="Personal-PMD-Rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/7.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_7_0_0.xsd">
+    <description>
+        PMD-rules for GSE
+    </description>
+
+    <exclude-pattern>.*/module-info.java</exclude-pattern>
+
+
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="GuardLogStatement"/>
+        <exclude name="JUnit4SuitesShouldUseSuiteAnnotation"/>
+        <exclude name="JUnit4TestShouldUseAfterAnnotation"/>
+        <exclude name="JUnit4TestShouldUseBeforeAnnotation"/>
+        <!--<exclude name="JUnitTestContainsTooManyAsserts"/>-->
+        <exclude name="JUnitAssertionsShouldIncludeMessage"/>
+        <exclude name="JUnitTestsShouldIncludeAssert"/>
+        <exclude name="PositionLiteralsFirstInCaseInsensitiveComparisons"/>
+        <exclude name="PositionLiteralsFirstInComparisons"/>
+        <exclude name="UnusedImports"/>
+        <exclude name="AccessorMethodGeneration"/>
+        <exclude name="PreserveStackTrace"/>
+
+    </rule>
+
+    <rule ref="category/java/bestpractices.xml/SystemPrintln"
+          message="Avoid System.out/err.println, use Logger instead">
+        <priority>1</priority>
+    </rule>
+
+    <rule ref="category/java/bestpractices.xml/MissingOverride">
+        <priority>1</priority>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="AvoidFinalLocalVariable"/>
+
+        <!--Could clash with Star-Import-->
+        <exclude name="DuplicateImports"/>
+
+        <exclude name="LongVariable"/>
+        <!--<exclude name="OnlyOneReturn"/>-->
+
+        <exclude name="DefaultPackage"/>
+        <exclude name="CommentDefaultAccessModifier"/>
+
+        <!-- Needed by JPA -->
+        <exclude name="UnnecessaryConstructor"/>
+
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/ControlStatementBraces">
+        <priority>1</priority>
+    </rule>
+    <rule ref="category/java/codestyle.xml/PrematureDeclaration">
+        <priority>1</priority>
+    </rule>
+<rule ref="category/java/codestyle.xml/UseDiamondOperator">
+        <priority>1</priority>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/ShortClassName">
+        <properties>
+            <property name="minimum">
+                <value>3</value>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Allow names like id -->
+    <rule ref="category/java/codestyle.xml/ShortVariable">
+        <properties>
+            <property name="minimum">
+                <value>2</value>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+        <properties>
+            <property name="utilityClassPattern" value="[A-Z][a-zA-Z]+"/>
+        </properties>
+    </rule>
+
+    <!--Allow more static imports - especially for tests-->
+    <rule ref="category/java/codestyle.xml/TooManyStaticImports">
+        <properties>
+            <property name="maximumStaticImports">
+                <value>15</value>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/design.xml">
+        <exclude name="LoosePackageCoupling"/>
+        <exclude name="ImmutableField"/>
+        <exclude name="LawOfDemeter"/>
+        <exclude name="DataClass"/>
+        <exclude name="TooManyMethods"/>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="JUnitStaticSuite"/>
+        <exclude name="BeanMembersShouldSerialize"/>
+        <!-- can't handle for-loops, https://sourceforge.net/p/pmd/bugs/1383/ -->
+        <exclude name="DataflowAnomalyAnalysis"/>
+    </rule>
+    <rule ref="category/java/errorprone.xml/AvoidLiteralsInIfCondition">
+        <properties>
+            <property name="ignoreMagicNumbers">
+                <value>-1,0,1,2</value>
+            </property>
+            <property name="ignoreExpressions">
+                <value>false</value>
+            </property>
+        </properties>
+    </rule>
+    <rule ref="category/java/errorprone.xml/DoNotCallSystemExit">
+        <priority>1</priority>
+    </rule><rule ref="category/java/errorprone.xml/EmptyCatchBlock">
+        <priority>1</priority>
+    </rule>
+
+
+    <rule ref="category/java/multithreading.xml/DoNotUseThreads">
+        <priority>1</priority>
+    </rule>
+
+    <rule ref="category/java/performance.xml">
+        <!--<exclude name="AvoidInstantiatingObjectsInLoops"/>-->
+    </rule>
+
+
+</ruleset>
