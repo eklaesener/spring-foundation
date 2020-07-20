@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>de.eklaesener</groupId>
 	<artifactId>inventorizer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>Inventorizer</name>
 	<description>A simple tool for keeping an inventory of your stuff</description>
 

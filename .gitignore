@@ -57,3 +57,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Database
+data/umfrato.mv.db

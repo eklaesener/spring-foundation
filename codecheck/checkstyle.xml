@@ -226,7 +226,7 @@
             <property name="allowUnknownTags" value="true"/>
         </module>
         <module name="InvalidJavadocPosition"/>
-        <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+        <!--<module name="JavadocMissingWhitespaceAfterAsterisk"/>-->
         <module name="JavadocMethod">
             <property name="scope" value="protected"/>
             <property name="validateThrows" value="true"/>
