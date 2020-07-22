@@ -51,6 +51,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+logs
 
 # Editor directories and files
 *.suo
@@ -60,4 +61,4 @@ pnpm-debug.log*
 *.sw?
 
 # Database
-data/umfrato.mv.db
+data
