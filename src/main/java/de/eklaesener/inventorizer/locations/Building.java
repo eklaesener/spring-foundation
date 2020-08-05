@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-public class Building {
+public final class Building {
 
     @Id
     @GeneratedValue(
@@ -54,4 +54,8 @@ public class Building {
 
     @Column(name = "country", nullable = false)
     private String country;
+
+    protected Building() {
+
+    }
 }

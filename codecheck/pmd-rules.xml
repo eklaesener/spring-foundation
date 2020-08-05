@@ -3,7 +3,7 @@
 <ruleset name="Personal-PMD-Rules"
          xmlns="http://pmd.sourceforge.net/ruleset/7.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_7_0_0.xsd">
+>
     <description>
         PMD-rules for GSE
     </description>
@@ -43,13 +43,16 @@
         <exclude name="DuplicateImports"/>
 
         <exclude name="LongVariable"/>
-        <!--<exclude name="OnlyOneReturn"/>-->
+        <exclude name="OnlyOneReturn"/>
 
         <exclude name="DefaultPackage"/>
         <exclude name="CommentDefaultAccessModifier"/>
 
         <!-- Needed by JPA -->
         <exclude name="UnnecessaryConstructor"/>
+
+        <!-- Breaks on ambiguous matches -->
+        <exclude name="UnnecessaryFullyQualifiedName"/>
 
     </rule>
 
@@ -132,6 +135,7 @@
 
     <rule ref="category/java/performance.xml">
         <!--<exclude name="AvoidInstantiatingObjectsInLoops"/>-->
+        <exclude name="RedundantFieldInitializer"/>
     </rule>
 
 

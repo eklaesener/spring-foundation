@@ -1,5 +1,6 @@
 package de.eklaesener.inventorizer.configuration;
 
+import de.eklaesener.inventorizer.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -10,9 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -46,17 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void configureGlobal(final UserDetailsService userDetailsService,
-                                final PasswordEncoder passwordEncoder,
+    public void configureGlobal(final UserService userService,
                                 final AuthenticationManagerBuilder auth) throws Exception { //NOPMD
         // AuthenticationManagerBuilder.userDetailsService throws java.lang.Exception, so this method has to do the same
-        auth.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder);
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(securityProperties.getHashRounds());
+        auth.userDetailsService(userService)
+            .passwordEncoder(userService.getPasswordEncoder());
     }
 
     @Bean
