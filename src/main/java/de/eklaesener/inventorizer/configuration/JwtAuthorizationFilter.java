@@ -42,9 +42,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(final HttpServletRequest request) {
-        final String token = request.getHeader(securityProperties.getTokenHeader());
+        final String token = request.getHeader(securityProperties.tokenHeader());
         final UsernamePasswordAuthenticationToken parsedToken;
-        if (token != null && !token.isEmpty() && token.startsWith(securityProperties.getTokenPrefix())) {
+        if (token != null && !token.isEmpty() && token.startsWith(securityProperties.tokenPrefix())) {
             parsedToken = parseToken(token);
         } else {
             parsedToken = null;
@@ -55,10 +55,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken parseToken(final String token) {
         UsernamePasswordAuthenticationToken result = null;
         try {
-            final byte[] signingKey = securityProperties.getJwtSecret().getBytes();
+            final byte[] signingKey = securityProperties.jwtSecret().getBytes();
             final Jws<Claims> parsedToken = Jwts.parser()
                 .setSigningKey(signingKey)
-                .parseClaimsJws(token.replace(securityProperties.getTokenPrefix(), "").strip());
+                .parseClaimsJws(token.replace(securityProperties.tokenPrefix(), "").strip());
             final String username = parsedToken.getBody().getSubject();
             final List<SimpleGrantedAuthority> authorities = ((List<?>) parsedToken.getBody()
                 .get(JwtAuthenticationFilter.ROLE)).stream()

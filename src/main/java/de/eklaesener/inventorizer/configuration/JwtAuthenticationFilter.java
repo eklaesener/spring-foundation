@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         super();
         this.authenticationManager = authenticationManager;
         this.securityProperties = securityProperties;
-        setFilterProcessesUrl(this.securityProperties.getAuthLoginURL());
+        setFilterProcessesUrl(this.securityProperties.authLoginURL());
     }
 
     @Override
@@ -55,14 +55,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         final UserDetails userDetails = (UserDetails) authResult.getPrincipal();
         final List<String> roles = userDetails.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        final byte[] signingKey = securityProperties.getJwtSecret().getBytes();
+        final byte[] signingKey = securityProperties.jwtSecret().getBytes();
         final String token = Jwts.builder()
             .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
-            .setHeaderParam(TYPE, securityProperties.getTokenType())
+            .setHeaderParam(TYPE, securityProperties.tokenType())
             .setSubject(userDetails.getUsername())
             .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY_IN_MILLISECONDS)) // Ten days from now
             .claim(ROLE, roles)
             .compact();
-        response.addHeader(securityProperties.getTokenHeader(), securityProperties.getTokenPrefix() + token);
+        response.addHeader(securityProperties.tokenHeader(), securityProperties.tokenPrefix() + token);
     }
 }

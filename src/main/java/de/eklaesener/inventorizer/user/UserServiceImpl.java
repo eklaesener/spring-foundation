@@ -1,6 +1,7 @@
 package de.eklaesener.inventorizer.user;
 
 import de.eklaesener.inventorizer.configuration.SecurityProperties;
+import lombok.Cleanup;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.passay.CharacterData;
@@ -45,11 +46,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(final SecurityProperties securityProperties,
                            final EntityManagerFactory entityManagerFactory) {
-        this.passwordEncoder = new BCryptPasswordEncoder(securityProperties.getHashRounds());
+        this.passwordEncoder = new BCryptPasswordEncoder(securityProperties.hashRounds());
         this.entityManagerFactory = entityManagerFactory;
-        this.generatedPasswordLength = securityProperties.getValidation().getMinimumLength()
+        this.generatedPasswordLength = securityProperties.validation().minimumLength()
             + MINIMUM_GENERATED_CHARACTERS;
-        this.passwordValidator = initializePasswordValidator(securityProperties.getValidation());
+        this.passwordValidator = initializePasswordValidator(securityProperties.validation());
         this.characterRules = passwordValidator.getRules().stream()
             .filter(rule -> rule instanceof CharacterRule).map(rule -> (CharacterRule) rule)
             .collect(Collectors.toList());
@@ -58,8 +59,8 @@ public class UserServiceImpl implements UserService {
 
     private PasswordValidator initializePasswordValidator(final SecurityProperties.PasswordValidation validationRules) {
         final List<Rule> rules = new ArrayList<>(8);
-        rules.add(new LengthRule(validationRules.getMinimumLength(), Integer.MAX_VALUE));
-        if (validationRules.isRequireAlphaNumeric()) {
+        rules.add(new LengthRule(validationRules.minimumLength(), Integer.MAX_VALUE));
+        if (validationRules.requireAlphaNumeric()) {
             rules.add(new CharacterRule(new CharacterData() {
                 @Override
                 public String getErrorCode() {
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
                 }
             }, 1));
         }
-        if (validationRules.isRequireSpecial()) {
+        if (validationRules.requireSpecial()) {
             rules.add(new CharacterRule(new CharacterData() {
                 @Override
                 public String getErrorCode() {
@@ -81,23 +82,23 @@ public class UserServiceImpl implements UserService {
 
                 @Override
                 public String getCharacters() {
-                    return validationRules.getSpecialCharacters();
+                    return validationRules.specialCharacters();
                 }
             }, 1));
         }
-        if (validationRules.getRejectIfSequenceGreaterThan() != -1) {
+        if (validationRules.rejectIfSequenceGreaterThan() != -1) {
             rules.add(new IllegalSequenceRule(EnglishSequenceData.Alphabetical,
-                validationRules.getRejectIfSequenceGreaterThan(), false));
+                validationRules.rejectIfSequenceGreaterThan(), false));
             rules.add(new IllegalSequenceRule(EnglishSequenceData.Numerical,
-                validationRules.getRejectIfSequenceGreaterThan(), false));
+                validationRules.rejectIfSequenceGreaterThan(), false));
             rules.add(new IllegalSequenceRule(EnglishSequenceData.USQwerty,
-                validationRules.getRejectIfSequenceGreaterThan(), false));
+                validationRules.rejectIfSequenceGreaterThan(), false));
         }
-        if (validationRules.isRejectDictionaryEntries()) {
-            initializeDictionary(new File(validationRules.getDictionaryLocation()));
+        if (validationRules.rejectDictionaryEntries()) {
+            initializeDictionary(new File(validationRules.dictionaryLocation()));
             rules.add(new DictionaryRule(new PasswordDictionary(entityManagerFactory)));
         }
-        if (validationRules.isRejectContainingUsername()) {
+        if (validationRules.rejectContainingUsername()) {
             rules.add(new UsernameRule());
         }
         return new PasswordValidator(rules);
@@ -116,7 +117,7 @@ public class UserServiceImpl implements UserService {
         try (BufferedReader reader = Files.newBufferedReader(file.toPath())) {
             final TypedQuery<String> typedQuery = entityManager.createQuery(criteriaQuery);
             transaction.begin();
-            final Set<String> savedPasswords = new TreeSet<>(typedQuery.getResultList());
+            final SortedSet<String> savedPasswords = new TreeSet<>(typedQuery.getResultList());
             final List<String> unsavedPasswords = Collections.synchronizedList(new LinkedList<>());
             // First go through the file and check if each entry is present
             reader.lines().parallel().forEach(password -> {
@@ -172,17 +173,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User add(final UserDTO data) {
         final RuleResult validationResult = passwordValidator
-            .validate(new PasswordData(data.getUsername(), data.getPassword()));
+            .validate(new PasswordData(data.username(), data.password()));
         if (!validationResult.isValid()) {
             throw new IllegalArgumentException();
         }
-        final User user = new User(data.getUsername(), data.getMailAddress(),
-            passwordEncoder.encode(data.getPassword()));
-        if (data.getAuthorities() != null) {
-            user.getAuthoritiesAsEnum().addAll(data.getAuthorities());
+        final User user = new User(data.username(), data.mailAddress(),
+            passwordEncoder.encode(data.password()));
+        if (data.authorities() != null) {
+            user.getAuthoritiesAsEnum().addAll(data.authorities());
         }
-        user.setFirstName(data.getFirstName());
-        user.setLastName(data.getLastName());
+        user.firstName(data.firstName());
+        user.lastName(data.lastName());
         final EntityManager entityManager = entityManagerFactory.createEntityManager();
         final EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -214,9 +215,9 @@ public class UserServiceImpl implements UserService {
             if (user == null) {
                 throw new IllegalArgumentException();
             }
-            user.setForceChangePassword(true);
+            user.forceChangePassword(true);
             final String newPassword = passwordGenerator.generatePassword(generatedPasswordLength, characterRules);
-            user.setPassword(passwordEncoder.encode(newPassword));
+            user.password(passwordEncoder.encode(newPassword));
             transaction.commit();
             // TODO: Once mailing works, send the new password to the user
             return user;
